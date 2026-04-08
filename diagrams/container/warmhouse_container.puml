@@ -1,0 +1,40 @@
+@startuml warmhouse_container
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Система «Тёплый дом» - Диаграмма контейнеров
+
+Person(user, "Пользователь", "Владелец умного дома")
+Person(admin, "Администратор", "Администратор системы")
+System_Ext(device, "Физическое устройство", "Датчик/реле")
+
+System_Boundary(warmhouse, "Система «Тёплый дом»") {
+    
+    Container(api_gateway, "API-шлюз", "Единая точка входа для запросов")
+    
+    Container(auth_service, "Сервис авторизации", "Go + PostgreSQL", "Авторизация/Регистрация пользователя")
+    Container(device_service, "Сервис управления устройствами", "Go + PostgreSQL", "Управление устройствами")
+    Container(telemetry_service, "Сервис сбора данных с устройств", "Go + Kafka", "Сбор и хранение данных")
+    Container(notification_service, "Сервис уведомлений", "Go", "Отправка уведомлений")
+    
+    ContainerQueue(message_queue, "Kafka", "Очередь сообщений")
+    ContainerDb(database, "PostgreSQL", "База данных")
+}
+
+Rel(user, api_gateway, "HTTPS", "Запросы")
+Rel(admin, api_gateway, "HTTPS", "Запросы")
+Rel(api_gateway, auth_service, "Авторизует/Регистрирует пользователя", "Проверка токена")
+Rel(api_gateway, device_service, "Отправляет запросы к устройствам")
+
+Rel(device, device_service, "HTTP", "Регистрация")
+
+Rel(device_service, message_queue, "Пишет события")
+Rel(telemetry_service, message_queue, "Читает/Пишет события")
+Rel(notification_service, message_queue, "Читает события для уведомлений")
+
+Rel(telemetry_service, notification_service, "Отправляет уведомления")
+
+Rel(auth_service, database, "Читает/Пишет", "SQL")
+Rel(device_service, database, "Читает/Пишет", "SQL")
+Rel(telemetry_service, database, "Пишет телеметрию", "SQL")
+
+@enduml

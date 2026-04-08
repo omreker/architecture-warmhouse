@@ -1,0 +1,18 @@
+@startuml auth_service_code
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title Сервис авторизации - Диаграмма классов
+
+class AuthController {
+  + Login(email: string, password: string) : Token
+  + Register(email: string, password: string) : User
+}
+
+class AuthManager {
+  + Authenticate(email: string, password: string) : bool
+  + GenerateToken(userId: UUID) : string
+}
+
+AuthController ..> AuthManager : вызывает
+
+@enduml

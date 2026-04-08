@@ -1,0 +1,68 @@
+@startuml warmhouse_er
+title Система «Тёплый дом» - ER-диаграмма
+skinparam linetype ortho
+
+entity "user" as User {
+  * id : UUID <<PK>>
+  --
+  * email : string
+  created_at : timestamp
+  last_login : timestamp
+}
+
+entity "house" as House {
+  * id : UUID <<PK>>
+  --
+  * owner_id : UUID <<FK>>
+  name : string
+  address : string
+}
+
+entity "device" as Device {
+  * id : int <<PK>>
+  --
+  * name : string
+  * type : string
+  * location : string
+  * house_id : UUID <<FK>>
+  value : float
+  unit : string
+  status : string
+  last_updated : timestamp
+  created_at : timestamp
+}
+
+entity "device_type" as DeviceType {
+  * id : UUID <<PK>>
+  --
+  * name : string
+  description : text
+}
+
+entity "telemetry_data" as TelemetryData {
+  * id : UUID <<PK>>
+  --
+  * device_id : int <<FK>>
+  * metric_name : string
+  * timestamp : timestamp
+  value : float
+  unit : string
+}
+
+entity "notification" as Notification {
+  * id : UUID <<PK>>
+  --
+  * user_id : UUID <<FK>>
+  * type : string
+  title : string
+  message : text
+  status : string
+}
+
+User ||--o{ House : "1:N"
+House ||--o{ Device : "1:N"
+DeviceType ||--o{ Device : "1:N"
+Device ||--o{ TelemetryData : "1:N"
+User ||--o{ Notification : "1:N"
+
+@enduml

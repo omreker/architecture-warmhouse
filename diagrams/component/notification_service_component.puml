@@ -1,0 +1,17 @@
+@startuml notification_service_component
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title Сервис уведомлений - Диаграмма компонентов
+
+Container_Boundary(notification_service, "Сервис уведомлений") {
+
+    Component(manager, "Notification Manager", "Go", "Обработка и отправка уведомлений")
+}
+
+System_Ext(kafka, "Kafka")
+
+Rel(kafka, manager, "Читает события", "Kafka")
+
+Rel(manager, notification_service, "Отправляет уведомления", "email, push, SMS")
+
+@enduml

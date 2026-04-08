@@ -1,0 +1,93 @@
+asyncapi: 2.6.0
+info:
+  title: Notification Service Events
+  description: События для сервиса уведомлений умного дома
+  version: 1.0.0
+
+servers:
+  development:
+    url: localhost:9092
+    protocol: kafka
+    description: Kafka для разработки
+
+channels:
+  telemetry/alert:
+    description: Публикуется при критических значениях телеметрии
+    publish:
+      operationId: publishTelemetryAlert
+      summary: Оповещение о критической температуре
+      message:
+        $ref: '#/components/messages/TelemetryAlert'
+    subscribe:
+      operationId: subscribeTelemetryAlert
+      summary: Подписка на оповещения
+      message:
+        $ref: '#/components/messages/TelemetryAlert'
+
+  notification/request:
+    description: Запрос на отправку уведомления пользователю
+    subscribe:
+      operationId: subscribeNotificationRequest
+      summary: Запрос на уведомление
+      message:
+        $ref: '#/components/messages/NotificationRequest'
+
+components:
+  messages:
+    TelemetryAlert:
+      name: TelemetryAlert
+      title: Оповещение о критической температуре
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          device_id:
+            type: integer
+            description: ID устройства
+          metric_name:
+            type: string
+            description: Название метрики
+          value:
+            type: number
+            description: Значение метрики
+          threshold:
+            type: number
+            description: Пороговое значение
+          timestamp:
+            type: string
+            format: date-time
+            description: Время события
+      examples:
+        - payload:
+            device_id: 1
+            metric_name: "temperature"
+            value: 35.5
+            threshold: 30.0
+            timestamp: "2026-01-01T10:00:00Z"
+
+    NotificationRequest:
+      name: NotificationRequest
+      title: Запрос на уведомление
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          user_id:
+            type: string
+            format: uuid
+            description: ID пользователя
+          type:
+            type: string
+            description: Тип уведомления (email, push, sms)
+          title:
+            type: string
+            description: Заголовок
+          message:
+            type: string
+            description: Текст уведомления
+      examples:
+        - payload:
+            user_id: "64e9421-z31q-v1a6-v76b5-428942816985"
+            type: "push"
+            title: "Высокая температура"
+            message: "Температура в спальне превысила 30°C"

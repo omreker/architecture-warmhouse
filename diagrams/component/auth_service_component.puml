@@ -1,0 +1,19 @@
+@startuml auth_service_component
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title Сервис авторизации - Диаграмма компонентов
+
+Container_Boundary(auth_service, "Сервис авторизации") {
+    
+    Component(api, "API", "Go/HTTP", "Принимает запросы на авторизацю/регистрацию")
+    Component(manager, "Auth Manager", "Go", "Проверка пароля, генерация токена")
+}
+
+System_Ext(api_gateway, "API-шлюз")
+System_Ext(database, "PostgreSQL", "Общая база данных")
+
+Rel(api_gateway, api, "HTTPS", "Запросы")
+Rel(api, manager, "Вызывает")
+Rel(manager, database, "Читает/Пишет", "SQL")
+
+@enduml

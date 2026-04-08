@@ -1,0 +1,25 @@
+@startuml device_service_component
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title Сервис устройств - Диаграмма компонентов
+
+Container_Boundary(device_service, "Сервис управления устройствами") {
+    
+    Component(api, "API", "Go/HTTP", "Принимает запросы")
+    Component(manager, "Device Manager", "Go", "Логика работы")
+    Component(client, "Device Client", "Go", "Общение с устройствами")
+}
+
+System_Ext(api_gateway, "API-шлюз")
+System_Ext(kafka, "Kafka")
+System_Ext(database, "PostgreSQL", "Общая база данных")
+System_Ext(device, "Физическое устройство")
+
+Rel(api_gateway, api, "HTTPS", "Запросы")
+Rel(api, manager, "Вызывает")
+Rel(manager, database, "Читает/Пишет", "SQL")
+Rel(manager, client, "Шлёт команды")
+Rel(client, device, "HTTP", "Команды")
+Rel(manager, kafka, "Пишет события", "Kafka")
+
+@enduml

@@ -1,0 +1,22 @@
+@startuml telemetry_service_component
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title Сервис сбора данных с устройств - Диаграмма компонентов
+
+Container_Boundary(telemetry_service, "Сервис сбора данных с устройств") {
+    
+    Component(api, "API", "Go/HTTP", "Принимает запросы")
+    Component(manager, "Telemetry Manager", "Go", "Обработка и анализ данных")
+}
+
+System_Ext(kafka, "Kafka")
+System_Ext(database, "PostgreSQL", "Общая база данных")
+System_Ext(notification_service, "Сервис уведомлений")
+
+Rel(api, manager, "Вызывает")
+Rel(manager, database, "Пишет телеметрию", "SQL")
+Rel(manager, notification_service, "Отправляет уведомления")
+
+Rel(telemetry_service, kafka, "Читает/Пишет события", "Kafka")
+
+@enduml

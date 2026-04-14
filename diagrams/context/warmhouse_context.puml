@@ -1,0 +1,20 @@
+@startuml warmhouse_context
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+title Система «Тёплый дом» - Диаграмма контекста
+
+Person(user, "Пользователь", "Владелец дома, который управляет системой")
+Person(specialist, "Специалист по подключению системы отопления", "Устанавливает оборудование")
+
+System(warmhouse, "Система «Тёплый дом»", "Управление отоплением и мониторинг температуры")
+
+System_Ext(database, "PostgreSQL", "Хранение данных пользователей и устройств")
+System_Ext(heating_module, "Модуль отопления", "Датчики и реле")
+
+Rel(user, warmhouse, "Управляет отоплением и получает данные о температуре")
+Rel(specialist, heating_module, "Установка и первичная настройка")
+Rel(heating_module, warmhouse, "Отправка данных о температуре")
+Rel(warmhouse, heating_module, "Команды управления")
+Rel(warmhouse, database, "Чтение и запись данных")
+
+@enduml
